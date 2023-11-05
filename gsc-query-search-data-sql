@@ -1,0 +1,15 @@
+SELECT
+  query,
+  is_anonymized_query AS anonymized,
+  SUM(impressions) AS impressions,
+  SUM(clicks) AS clicks,
+  SUM(clicks)/NULLIF(SUM(impressions), 0) AS CTR
+FROM
+  marketingdata-393009.searchconsole.searchdata_site_impression
+WHERE
+  data_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 28 DAY)
+GROUP BY
+  query,
+  anonymized
+ORDER BY
+  clicks desc
