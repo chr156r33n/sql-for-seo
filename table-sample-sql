@@ -1,0 +1,4 @@
+SELECT
+  *
+FROM
+  table-name TABLESAMPLE SYSTEM (10 PERCENT)
