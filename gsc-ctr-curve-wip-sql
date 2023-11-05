@@ -1,0 +1,35 @@
+/* This is WIP - still needs work */
+
+WITH PivotData AS (
+  SELECT
+    data_date,
+    IFNULL((CASE WHEN sum_top_position between 1 and 1.4 THEN 1 
+    WHEN sum_top_position between 1.5 and 2.4 THEN 2
+    WHEN sum_top_position between 2.5 and 3.4 THEN 3
+    WHEN sum_top_position between 3.5 and 4.4 THEN 4
+    WHEN sum_top_position between 4.5 and 5.4 THEN 5
+    WHEN sum_top_position between 5.5 and 6.4 THEN 6
+    WHEN sum_top_position between 6.5 and 7.4 THEN 7
+    WHEN sum_top_position between 7.5 and 8.4 THEN 8
+    WHEN sum_top_position between 8.5 and 9.4 THEN 9
+    WHEN sum_top_position between 9.5 and 10.4 THEN 10
+    else 101 END),0) as Position,
+    AVG(clicks/impressions) AS CTR
+  FROM
+    `marketingdata-393009.searchconsole.searchdata_site_impression`
+  WHERE data_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 9 DAY)
+  GROUP BY data_date, Position
+)
+
+SELECT
+  Position,
+  MAX(CASE WHEN data_date = DATE_SUB(CURRENT_DATE(), INTERVAL 9 DAY) THEN CTR END) AS Day_1,
+  MAX(CASE WHEN data_date = DATE_SUB(CURRENT_DATE(), INTERVAL 8 DAY) THEN CTR END) AS Day_2,
+  MAX(CASE WHEN data_date = DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY) THEN CTR END) AS Day_3,
+  MAX(CASE WHEN data_date = DATE_SUB(CURRENT_DATE(), INTERVAL 6 DAY) THEN CTR END) AS Day_4,
+  MAX(CASE WHEN data_date = DATE_SUB(CURRENT_DATE(), INTERVAL 5 DAY) THEN CTR END) AS Day_5,
+  MAX(CASE WHEN data_date = DATE_SUB(CURRENT_DATE(), INTERVAL 4 DAY) THEN CTR END) AS Day_6,
+  MAX(CASE WHEN data_date = DATE_SUB(CURRENT_DATE(), INTERVAL 3 DAY) THEN CTR END) AS Day_7
+FROM PivotData
+GROUP BY Position
+ORDER BY Position ASC
