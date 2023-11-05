@@ -5,7 +5,7 @@ SELECT
   SUM(clicks) AS clicks,
   SUM(clicks)/NULLIF(SUM(impressions), 0) AS CTR
 FROM
-  marketingdata-393009.searchconsole.searchdata_site_impression
+`table-name`
 WHERE
   data_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 28 DAY)
 GROUP BY
