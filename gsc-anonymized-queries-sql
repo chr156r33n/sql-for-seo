@@ -12,7 +12,7 @@ FROM
     END AS annonymized_query,
     is_anonymized_query
   FROM
-    `marketingdata-393009.searchconsole.searchdata_url_impression`) main_query
+    `table-name`) main_query
 CROSS JOIN
   (SELECT COUNT(*) AS total_count FROM `marketingdata-393009.searchconsole.searchdata_url_impression`) total_queries
 GROUP BY
@@ -29,5 +29,5 @@ END
   AS annonymized_query,
   count(is_anonymized_query) as query_count
   FROM
-  `marketingdata-393009.searchconsole.searchdata_url_impression`
+  `table-name`
   group by annonymized_query
