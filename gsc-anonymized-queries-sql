@@ -14,7 +14,7 @@ FROM
   FROM
     `table-name`) main_query
 CROSS JOIN
-  (SELECT COUNT(*) AS total_count FROM `marketingdata-393009.searchconsole.searchdata_url_impression`) total_queries
+  (SELECT COUNT(*) AS total_count FROM `table-data.searchdata_url_impression`) total_queries
 GROUP BY
   annonymized_query, total_queries.total_count;
 
