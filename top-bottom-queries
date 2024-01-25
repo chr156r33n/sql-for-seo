@@ -1,0 +1,50 @@
+WITH
+  ct AS (
+    SELECT
+      query as query,
+      SUM(clicks) AS clicks,
+      SUM(impressions) AS impressions,
+    FROM
+      marketingdata-393009.searchconsole.searchdata_site_impression
+    WHERE
+      data_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 28 DAY)
+    GROUP BY query
+  ),
+
+  prev AS (
+    SELECT
+      query,
+      SUM(clicks) AS clicks,
+      SUM(impressions) AS impressions,
+    FROM
+      marketingdata-393009.searchconsole.searchdata_site_impression
+    WHERE
+      data_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 56 DAY)
+      AND data_date < DATE_SUB(CURRENT_DATE(), INTERVAL 28 DAY)
+    GROUP BY query
+  )
+
+SELECT
+  subquery.query,
+  subquery.current_clicks,
+  subquery.click_diff,
+  subquery.current_impr,
+  subquery.impr_diff,
+  subquery.prev_clicks,
+  subquery.prev_impr
+FROM (
+  SELECT
+    COALESCE(ct.query, prev.query) AS query,
+    IFNULL(SUM(ct.clicks), 0) AS current_clicks,
+    IFNULL((SUM(ct.clicks) - IFNULL(SUM(prev.clicks), 0)), 0) AS click_diff,
+    IFNULL(SUM(ct.impressions), 0) AS current_impr,
+    IFNULL((SUM(ct.impressions) - IFNULL(SUM(prev.impressions), 0)), 0) AS impr_diff,
+    IFNULL(SUM(prev.clicks), 0) AS prev_clicks,
+    IFNULL(SUM(prev.impressions), 0) AS prev_impr,
+  FROM
+    ct
+  FULL OUTER JOIN
+    prev ON ct.query = prev.query
+  GROUP BY COALESCE(ct.query, prev.query)
+) AS subquery
+ORDER BY subquery.impr_diff ASC;
